@@ -4,7 +4,7 @@ const key = '779e4b58ea0317e919553d94aae43020';
 
 // Create a new date instance dynamically with JS
 let d = new Date();
-let newDate = d.getMonth()+'.'+ d.getDate()+'.'+ d.getFullYear();
+let newDate = (d.getMonth()+1)+'.'+ d.getDate()+'.'+ d.getFullYear();
 
 document.getElementById('generate').addEventListener('click', perform);
 
@@ -17,18 +17,18 @@ function perform(e){
         postData('http://localhost:8000/addWeatherData', {temperature: APItemperature, date: newDate, user_response: feelings } )
         // Function which updates UI
         .then(function() {
-            update()
-        })
-    })
+            update();
+        });
+    });
 }
 
 // Async GET
 const getTemp = async (baseURL, zip, key)=>{
-    const res = await fetch(baseURL + zip +'&appid='+ key)
+    const res = await fetch(baseURL + zip +'&appid='+ key);
     try {
         const data = await res.json();
         APItemperature = data.main.temp;
-        return APItemperature
+        return (APItemperature - 273.15).toFixed(2);
     }
     catch(error) {
         console.log('Error : ', error);
@@ -60,7 +60,7 @@ const update = async () => {
     try {
         const data = await req.json();
         document.getElementById('date').innerHTML = 'Date: ' +data.date;
-        document.getElementById('temp').innerHTML = 'Temperature: ' +data.temperature;
+        document.getElementById('temp').innerHTML = 'Temperature: ' +data.temperature+' °C';
         document.getElementById('content').innerHTML = 'Feelings: ' +data.user_response;
     }
     catch (error) {
